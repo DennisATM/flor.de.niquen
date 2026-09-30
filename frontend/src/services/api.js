@@ -89,3 +89,19 @@ export const eliminarProducto = async (id) => {
 
   return datos
 }
+
+export const obtenerProductosHome = async () => {
+  const respuesta = await fetch(`${API_URL}/api/productos/home`)
+
+  if (!respuesta.ok) {
+    throw new Error("Error al obtener los productos del Home")
+  }
+
+  const datos = await respuesta.json()
+
+  if (!datos.ok) {
+    throw new Error(datos.mensaje || "Error al obtener los productos del Home")
+  }
+
+  return datos.productos
+}

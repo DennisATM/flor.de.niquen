@@ -62,7 +62,23 @@ function manejarRuta($metodo, $ruta)
 
         return $controller->store($datos);
     }
-        
+
+    /*
+    |--------------------------------------------------------------------------
+    | Listar productos para home
+    |--------------------------------------------------------------------------
+    */    
+ 
+    if ($metodo === "GET" && $ruta === "/api/productos/home") {
+
+        require_once __DIR__ . "/../config/database.php";
+        require_once __DIR__ . "/../controllers/ProductoController.php";
+
+        $controller = new ProductoController($pdo);
+
+        return $controller->home();
+    }
+
         /*
     |--------------------------------------------------------------------------
     | Listar producto por ID

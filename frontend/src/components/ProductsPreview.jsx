@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
 
 import {ProductCard} from "./ProductCard"
-import { listarProductos } from "../services/productoService"
+import { listarProductosHome } from "../services/productoService"
 
 export const ProductsPreview = () => {
   const [productos, setProductos] = useState([])
@@ -10,7 +10,7 @@ export const ProductsPreview = () => {
   const [error, setError] = useState(null)
 
   useEffect(() => {
-    listarProductos()
+    listarProductosHome()
       .then((datos) => {
         setProductos(datos)
       })

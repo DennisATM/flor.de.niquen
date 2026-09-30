@@ -19,6 +19,14 @@ class ProductoController
         ];
     }
 
+    public function home(): array
+    {
+        return [
+            "ok" => true,
+            "productos" => $this->producto->obtenerParaHome()
+        ];
+    }
+
     public function show(int $id): array
     {
         $producto = $this->producto->obtenerPorId($id);

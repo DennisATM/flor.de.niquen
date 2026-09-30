@@ -1,5 +1,10 @@
 import { useState, useEffect } from "react"
-import { listarProductos, guardarProducto, editarProducto } from "../services/productoService"
+import { 
+  listarProductos, 
+  guardarProducto, 
+  editarProducto,
+  borrarProducto 
+} from "../services/productoService"
 
 export const AdminProductos = () => {
 
@@ -13,7 +18,8 @@ export const AdminProductos = () => {
     descripcion: "",
     categoria: "",
     formato: "",
-    imagen: ""
+    imagen: "",
+    mostrar_home: 0
     })
 
     useEffect(() => {
@@ -21,12 +27,12 @@ export const AdminProductos = () => {
     }, [])
 
     const manejarCambio = (e) => {
-    const { name, value } = e.target
+      const { name, value } = e.target
 
-    setFormulario({
-            ...formulario,
-            [name]: value
-        })
+      setFormulario({
+              ...formulario,
+              [name]: value
+          })
     }
 
     const manejarEditar = (producto) => {
@@ -38,10 +44,38 @@ export const AdminProductos = () => {
             descripcion: producto.descripcion || "",
             categoria: producto.categoria || "",
             formato: producto.formato || "",
-            imagen: producto.imagen || ""
+            imagen: producto.imagen || "",
+            mostrar_home: Number(producto.mostrar_home) || 0
         })
 
         setMostrarFormulario(true)
+    }
+
+    const manejarEliminar = async (producto) => {
+
+      const confirmar = window.confirm(
+        `¿Estás seguro de eliminar el producto "${producto.nombre}"?`
+      )
+
+      if (!confirmar) {
+        return
+      }
+
+      try {
+
+        await borrarProducto(producto.id)
+
+        alert("Producto eliminado correctamente")
+
+        await cargarProductos()
+
+      } catch (error) {
+
+        console.error(error)
+
+        alert(error.message)
+
+      }
     }
 
     async function cargarProductos() {
@@ -97,7 +131,8 @@ export const AdminProductos = () => {
           descripcion: "",
           categoria: "",
           formato: "",
-          imagen: ""
+          imagen: "",
+          mostrar_home: 0
         })
 
         // Salir del modo edición
@@ -142,7 +177,20 @@ export const AdminProductos = () => {
 
           <button
             type="button"
-            onClick={() => setMostrarFormulario(true)}
+            onClick={() => {
+              setProductoEditando(null)
+
+              setFormulario({
+                nombre: "",
+                descripcion: "",
+                categoria: "",
+                formato: "",
+                imagen: "",
+                mostrar_home: 0
+              })
+
+              setMostrarFormulario(true)
+            }}
             className="inline-flex items-center justify-center bg-green-800 text-white px-6 py-3 rounded-full font-semibold hover:bg-green-700 transition"
           >
             + Nuevo producto
@@ -254,6 +302,31 @@ export const AdminProductos = () => {
                     placeholder="/productos/arroz.jpg"
                   className="w-full border border-gray-300 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-green-600"
                 />
+              </div>
+
+              {/* MOSTRAR EN HOME */} 
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="mostrar_home"
+                  name="mostrar_home"
+                  checked={Number(formulario.mostrar_home) === 1}
+                  onChange={(e) =>
+                    setFormulario({
+                      ...formulario,
+                      mostrar_home: e.target.checked ? 1 : 0
+                    })
+                  }
+                  className="w-5 h-5 accent-green-700"
+                />
+
+                <label
+                  htmlFor="mostrar_home"
+                  className="text-sm font-medium text-gray-700"
+                >
+                  Mostrar este producto en la página Home
+                </label>
+
               </div>
 
 
@@ -386,14 +459,24 @@ export const AdminProductos = () => {
                                 </td>
                                 <td className="px-6 py-4">
 
-                                    <button
+                                    <div className="flex items-center gap-4">
+
+                                      <button
                                         type="button"
                                         onClick={() => manejarEditar(producto)}
                                         className="text-green-700 font-semibold hover:text-green-900 transition"
-                                    >
+                                      >
                                         Editar
-                                    </button>
+                                      </button>
 
+                                      <button
+                                        type="button"
+                                        onClick={() => manejarEliminar(producto)}
+                                        className="text-red-600 font-semibold hover:text-red-800 transition"
+                                      >
+                                        Eliminar
+                                      </button>
+                                    </div>
                                 </td>
 
                             </tr>

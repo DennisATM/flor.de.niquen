@@ -1,6 +1,7 @@
 import { 
   obtenerProductoPorId, 
   obtenerProductos,
+  obtenerProductosHome,
   crearProducto,
   actualizarProducto,
   eliminarProducto
@@ -24,4 +25,8 @@ export const editarProducto = async (id, producto) => {
 
 export const borrarProducto = async (id) => {
   return await eliminarProducto(id)
+}
+
+export const listarProductosHome = async () => {
+  return await obtenerProductosHome()
 }

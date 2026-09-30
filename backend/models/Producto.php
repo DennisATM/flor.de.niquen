@@ -19,9 +19,25 @@ class Producto
                 categoria,
                 formato,
                 imagen,
-                activo
+                activo,
+                mostrar_home
             FROM productos
             WHERE activo = 1
+            ORDER BY id ASC
+        ";
+
+        $stmt = $this->db->query($sql);
+
+        return $stmt->fetchAll();
+    }
+
+    public function obtenerParaHome(): array
+    {
+        $sql = "
+            SELECT *
+            FROM productos
+            WHERE activo = 1
+            AND mostrar_home = 1
             ORDER BY id ASC
         ";
 
@@ -40,7 +56,8 @@ class Producto
                 categoria,
                 formato,
                 imagen,
-                activo
+                activo,
+                mostrar_home
             FROM productos
             WHERE id = :id
             AND activo = 1
@@ -66,14 +83,16 @@ class Producto
                 descripcion,
                 categoria,
                 formato,
-                imagen
+                imagen,
+                mostrar_home
             )
             VALUES (
                 :nombre,
                 :descripcion,
                 :categoria,
                 :formato,
-                :imagen
+                :imagen,
+                :mostrar_home
             )
         ";
 
@@ -84,7 +103,8 @@ class Producto
             "descripcion" => $datos["descripcion"] ?? null,
             "categoria" => $datos["categoria"] ?? null,
             "formato" => $datos["formato"] ?? null,
-            "imagen" => $datos["imagen"] ?? null
+            "imagen" => $datos["imagen"] ?? null,
+            "mostrar_home" => $datos["mostrar_home"] ?? 0
         ]);
 
         return (int) $this->db->lastInsertId();
@@ -99,7 +119,8 @@ class Producto
                 descripcion = :descripcion,
                 categoria = :categoria,
                 formato = :formato,
-                imagen = :imagen
+                imagen = :imagen,
+                mostrar_home = :mostrar_home
             WHERE id = :id
         ";
 
@@ -111,7 +132,8 @@ class Producto
             "descripcion" => $datos["descripcion"] ?? null,
             "categoria" => $datos["categoria"] ?? null,
             "formato" => $datos["formato"] ?? null,
-            "imagen" => $datos["imagen"] ?? null
+            "imagen" => $datos["imagen"] ?? null,
+            "mostrar_home" => $datos["mostrar_home"] ?? 0
         ]);
     }
 
