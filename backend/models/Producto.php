@@ -31,6 +31,19 @@ class Producto
         return $stmt->fetchAll();
     }
 
+    public function obtenerTodosAdmin(): array
+    {
+        $sql = "
+            SELECT *
+            FROM productos
+            ORDER BY activo DESC, id ASC
+        ";
+
+        $stmt = $this->db->query($sql);
+
+        return $stmt->fetchAll();
+    }
+
     public function obtenerParaHome(): array
     {
         $sql = "
@@ -140,7 +153,8 @@ class Producto
     public function eliminar(int $id): bool
     {
         $sql = "
-            DELETE FROM productos
+            UPDATE productos
+            SET activo = 0
             WHERE id = :id
         ";
 
@@ -149,5 +163,23 @@ class Producto
         return $stmt->execute([
             "id" => $id
         ]);
+    }
+
+    public function restaurar(int $id): bool
+    {
+        $sql = "
+            UPDATE productos
+            SET activo = 1
+            WHERE id = :id
+            AND activo = 0
+        ";
+
+        $stmt = $this->db->prepare($sql);
+
+        $stmt->execute([
+            "id" => $id
+        ]);
+
+        return $stmt->rowCount() > 0;
     }
 }

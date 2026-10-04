@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react"
 import { 
-  listarProductos, 
+  listarProductosAdmin, 
   guardarProducto, 
   editarProducto,
-  borrarProducto 
+  borrarProducto,
+  restaurarProductoAdmin
 } from "../services/productoService"
 
 export const AdminProductos = () => {
@@ -78,11 +79,32 @@ export const AdminProductos = () => {
       }
     }
 
+    async function manejarRestaurar(producto) {
+      const confirmar = window.confirm(
+        `¿Deseas restaurar el producto "${producto.nombre}"?`
+      )
+
+      if (!confirmar) {
+        return
+      }
+
+      try {
+        await restaurarProductoAdmin(producto.id)
+
+        alert("Producto restaurado correctamente")
+
+        await cargarProductos()
+      } catch (error) {
+        console.error(error)
+        alert(error.message)
+      }
+    }
+
     async function cargarProductos() {
 
         try {
 
-            const datos = await listarProductos()
+            const datos = await listarProductosAdmin()
 
             setProductos(datos)
 
@@ -426,6 +448,12 @@ export const AdminProductos = () => {
                             Formato
                         </th>
                         <th className="text-left px-6 py-4 text-sm font-semibold text-gray-700">
+                            Estado
+                        </th>
+                        <th className="text-left px-6 py-4 text-sm font-semibold text-gray-700">
+                            Home
+                        </th>
+                        <th className="text-left px-6 py-4 text-sm font-semibold text-gray-700">
                             Acciones
                         </th>
 
@@ -458,24 +486,59 @@ export const AdminProductos = () => {
                                 {producto.formato}
                                 </td>
                                 <td className="px-6 py-4">
+                                  {Number(producto.activo) === 1 ? (
+                                    <span className="inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-700">
+                                      Activo
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-sm font-semibold text-red-700">
+                                      Inactivo
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-6 py-4">
+                                  {Number(producto.mostrar_home) === 1 ? (
+                                    <span className="inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-sm font-semibold text-blue-700">
+                                      Sí
+                                    </span>
+                                  ) : (
+                                    <span className="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-semibold text-gray-600">
+                                      No
+                                    </span>
+                                  )}
+                                </td>
+                                <td className="px-6 py-4">
 
                                     <div className="flex items-center gap-4">
 
-                                      <button
-                                        type="button"
-                                        onClick={() => manejarEditar(producto)}
-                                        className="text-green-700 font-semibold hover:text-green-900 transition"
-                                      >
-                                        Editar
-                                      </button>
+                                      {Number(producto.activo) === 1 ? (
+                                        <>
+                                          <button
+                                            type="button"
+                                            onClick={() => manejarEditar(producto)}
+                                            className="text-green-700 font-semibold hover:text-green-900 transition"
+                                          >
+                                            Editar
+                                          </button>
 
-                                      <button
-                                        type="button"
-                                        onClick={() => manejarEliminar(producto)}
-                                        className="text-red-600 font-semibold hover:text-red-800 transition"
-                                      >
-                                        Eliminar
-                                      </button>
+                                          <button
+                                            type="button"
+                                            onClick={() => manejarEliminar(producto)}
+                                            className="text-red-600 font-semibold hover:text-red-800 transition"
+                                          >
+                                            Eliminar
+                                          </button>
+                                        </>
+                                      ) : (
+                                        <button
+                                          type="button"
+                                          onClick={() => manejarRestaurar(producto)}
+                                          className="text-blue-600 font-semibold hover:text-blue-800 transition"
+                                        >
+                                          Restaurar
+                                        </button>
+                                      )}
+
                                     </div>
                                 </td>
 

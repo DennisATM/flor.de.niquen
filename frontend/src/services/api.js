@@ -31,6 +31,7 @@ export const obtenerProductoPorId= async (id)=> {
 export const crearProducto = async (producto) => {
   const respuesta = await fetch(`${API_URL}/api/productos`, {
     method: "POST",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json"
     },
@@ -53,6 +54,7 @@ export const crearProducto = async (producto) => {
 export const actualizarProducto = async (id, producto) => {
   const respuesta = await fetch(`${API_URL}/api/productos/${id}`, {
     method: "PUT",
+    credentials: "include",
     headers: {
       "Content-Type": "application/json"
     },
@@ -74,7 +76,8 @@ export const actualizarProducto = async (id, producto) => {
 
 export const eliminarProducto = async (id) => {
   const respuesta = await fetch(`${API_URL}/api/productos/${id}`, {
-    method: "DELETE"
+    method: "DELETE",
+    credentials: "include"
   })
 
   if (!respuesta.ok) {
@@ -104,4 +107,46 @@ export const obtenerProductosHome = async () => {
   }
 
   return datos.productos
+}
+
+export const obtenerProductosAdmin = async () => {
+ const respuesta = await fetch(`${API_URL}/api/productos/admin`, {
+    credentials: "include"
+  })
+
+  if (!respuesta.ok) {
+    throw new Error("Error al obtener los productos del administrador")
+  }
+
+  const datos = await respuesta.json()
+
+  if (!datos.ok) {
+    throw new Error(
+      datos.mensaje || "Error al obtener los productos del administrador"
+    )
+  }
+
+  return datos.productos
+}
+
+export const restaurarProducto = async (id) => {
+  const respuesta = await fetch(
+    `${API_URL}/api/productos/${id}/restaurar`,
+    {
+      method: "PUT",
+      credentials: "include"
+    }
+  )
+
+  if (!respuesta.ok) {
+    throw new Error("Error al restaurar el producto")
+  }
+
+  const datos = await respuesta.json()
+
+  if (!datos.ok) {
+    throw new Error(datos.mensaje)
+  }
+
+  return datos
 }

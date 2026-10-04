@@ -1,14 +1,20 @@
 import { 
   obtenerProductoPorId, 
   obtenerProductos,
+  obtenerProductosAdmin,
   obtenerProductosHome,
   crearProducto,
   actualizarProducto,
-  eliminarProducto
+  eliminarProducto,
+  restaurarProducto
  } from "./api"
 
 export const listarProductos = async () => {
   return await obtenerProductos()
+}
+
+export const listarProductosAdmin = async () => {
+  return await obtenerProductosAdmin()
 }
 
 export const buscarProductoPorId = async (id) => {
@@ -29,4 +35,8 @@ export const borrarProducto = async (id) => {
 
 export const listarProductosHome = async () => {
   return await obtenerProductosHome()
+}
+
+export const restaurarProductoAdmin = async (id) => {
+  return await restaurarProducto(id)
 }

@@ -19,6 +19,14 @@ class ProductoController
         ];
     }
 
+    public function admin(): array
+    {
+        return [
+            "ok" => true,
+            "productos" => $this->producto->obtenerTodosAdmin()
+        ];
+    }
+
     public function home(): array
     {
         return [
@@ -92,4 +100,20 @@ class ProductoController
         ];
     }
 
+    public function restore(int $id): array
+    {
+        $restaurado = $this->producto->restaurar($id);
+
+        if (!$restaurado) {
+            return [
+                "ok" => false,
+                "mensaje" => "No fue posible restaurar el producto"
+            ];
+        }
+
+        return [
+            "ok" => true,
+            "mensaje" => "Producto restaurado correctamente"
+        ];
+    }
 }

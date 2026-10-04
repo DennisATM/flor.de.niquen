@@ -17,6 +17,42 @@ function manejarRuta($metodo, $ruta)
         ];
     }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Login de usuario admin
+    |--------------------------------------------------------------------------
+    */  
+    if ($metodo === "POST" && $ruta === "/api/auth/login") {
+
+        require_once __DIR__ . "/../config/database.php";
+        require_once __DIR__ . "/../controllers/AuthController.php";
+
+        $datos = json_decode(
+            file_get_contents("php://input"),
+            true
+        );
+
+        $controller = new AuthController($pdo);
+
+        return $controller->login($datos ?? []);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Obtener usuario autenticado
+    |--------------------------------------------------------------------------
+    */
+    if ($metodo === "GET" && $ruta === "/api/auth/usuario") {
+
+        require_once __DIR__ . "/../middleware/Auth.php";
+        require_once __DIR__ . "/../config/database.php";
+        require_once __DIR__ . "/../controllers/AuthController.php";
+
+        $controller = new AuthController($pdo);
+
+        return $controller->usuarioActual();
+    }
+
 
     /*
     |--------------------------------------------------------------------------
@@ -42,6 +78,14 @@ function manejarRuta($metodo, $ruta)
 
     if ($metodo === "POST" && $ruta === "/api/productos") {
 
+        require_once __DIR__ . "/../middleware/Auth.php";
+
+        $autorizacion = Auth::requerirAutenticacion();
+
+        if ($autorizacion !== null) {
+            return $autorizacion;
+        }
+
         require_once __DIR__ . "/../config/database.php";
         require_once __DIR__ . "/../controllers/ProductoController.php";
 
@@ -50,17 +94,9 @@ function manejarRuta($metodo, $ruta)
             true
         );
 
-        if (!is_array($datos)) {
-
-            return [
-                "ok" => false,
-                "mensaje" => "Datos inválidos"
-            ];
-        }
-
         $controller = new ProductoController($pdo);
 
-        return $controller->store($datos);
+        return $controller->store($datos ?? []);
     }
 
     /*
@@ -77,6 +113,30 @@ function manejarRuta($metodo, $ruta)
         $controller = new ProductoController($pdo);
 
         return $controller->home();
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Listar productos para admin
+    |--------------------------------------------------------------------------
+    */  
+    
+    if ($metodo === "GET" && $ruta === "/api/productos/admin") {
+
+        require_once __DIR__ . "/../middleware/Auth.php";
+
+        $autorizacion = Auth::requerirAutenticacion();
+
+        if ($autorizacion !== null) {
+            return $autorizacion;
+        }
+
+        require_once __DIR__ . "/../config/database.php";
+        require_once __DIR__ . "/../controllers/ProductoController.php";
+
+        $controller = new ProductoController($pdo);
+
+        return $controller->admin();
     }
 
         /*
@@ -102,10 +162,15 @@ function manejarRuta($metodo, $ruta)
     |--------------------------------------------------------------------------
     */
 
-    if (
-        $metodo === "PUT" &&
-        preg_match("#^/api/productos/([0-9]+)$#", $ruta, $coincidencias)
-    ) {
+    if ($metodo === "PUT" && preg_match("#^/api/productos/([0-9]+)$#", $ruta, $coincidencias)) {
+
+    require_once __DIR__ . "/../middleware/Auth.php";
+
+        $autorizacion = Auth::requerirAutenticacion();
+
+        if ($autorizacion !== null) {
+            return $autorizacion;
+        }
 
         require_once __DIR__ . "/../config/database.php";
         require_once __DIR__ . "/../controllers/ProductoController.php";
@@ -117,17 +182,9 @@ function manejarRuta($metodo, $ruta)
             true
         );
 
-        if (!is_array($datos)) {
-
-            return [
-                "ok" => false,
-                "mensaje" => "Datos inválidos"
-            ];
-        }
-
         $controller = new ProductoController($pdo);
 
-        return $controller->update($id, $datos);
+        return $controller->update($id, $datos ?? []);
     }
 
         /*
@@ -136,10 +193,15 @@ function manejarRuta($metodo, $ruta)
     |--------------------------------------------------------------------------
     */
   
-    if (
-        $metodo === "DELETE" &&
-        preg_match("#^/api/productos/([0-9]+)$#", $ruta, $coincidencias)
-    ) {
+    if ($metodo === "DELETE" && preg_match("#^/api/productos/([0-9]+)$#", $ruta, $coincidencias)) {
+
+    require_once __DIR__ . "/../middleware/Auth.php";
+
+        $autorizacion = Auth::requerirAutenticacion();
+
+        if ($autorizacion !== null) {
+            return $autorizacion;
+        }
 
         require_once __DIR__ . "/../config/database.php";
         require_once __DIR__ . "/../controllers/ProductoController.php";
@@ -149,6 +211,26 @@ function manejarRuta($metodo, $ruta)
         $controller = new ProductoController($pdo);
 
         return $controller->destroy($id);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Restaurar producto
+    |--------------------------------------------------------------------------
+    */
+    if (
+        $metodo === "PUT" &&
+        preg_match("#^/api/productos/([0-9]+)/restaurar$#", $ruta, $coincidencias)
+    ) {
+
+        require_once __DIR__ . "/../config/database.php";
+        require_once __DIR__ . "/../controllers/ProductoController.php";
+
+        $id = (int) $coincidencias[1];
+
+        $controller = new ProductoController($pdo);
+
+        return $controller->restore($id);
     }
 
     /*
