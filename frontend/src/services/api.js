@@ -1,7 +1,14 @@
 const API_URL = "http://localhost:8000"
 
+async function fetchAPI(url, opciones = {}) {
+  return fetch(`${API_URL}${url}`, {
+    ...opciones,
+    credentials: "include",
+  })
+}
+
 export const obtenerProductos = async () => {
-  const respuesta = await fetch(`${API_URL}/api/productos`)
+  const respuesta = await fetchAPI(`/api/productos`)
 
   if (!respuesta.ok) {
     throw new Error("Error al obtener los productos")
@@ -13,7 +20,7 @@ export const obtenerProductos = async () => {
 }
 
 export const obtenerProductoPorId= async (id)=> {
-  const respuesta = await fetch(`${API_URL}/api/productos/${id}`)
+  const respuesta = await fetchAPI(`/api/productos/${id}`)
 
   if (!respuesta.ok) {
     throw new Error("Error al obtener el producto")
@@ -29,9 +36,8 @@ export const obtenerProductoPorId= async (id)=> {
 }
 
 export const crearProducto = async (producto) => {
-  const respuesta = await fetch(`${API_URL}/api/productos`, {
+  const respuesta = await fetchAPI(`/api/productos`, {
     method: "POST",
-    credentials: "include",
     headers: {
       "Content-Type": "application/json"
     },
@@ -52,9 +58,8 @@ export const crearProducto = async (producto) => {
 }
 
 export const actualizarProducto = async (id, producto) => {
-  const respuesta = await fetch(`${API_URL}/api/productos/${id}`, {
+  const respuesta = await fetchAPI(`/api/productos/${id}`, {
     method: "PUT",
-    credentials: "include",
     headers: {
       "Content-Type": "application/json"
     },
@@ -75,9 +80,8 @@ export const actualizarProducto = async (id, producto) => {
 }
 
 export const eliminarProducto = async (id) => {
-  const respuesta = await fetch(`${API_URL}/api/productos/${id}`, {
-    method: "DELETE",
-    credentials: "include"
+  const respuesta = await fetchAPI(`/api/productos/${id}`, {
+    method: "DELETE"
   })
 
   if (!respuesta.ok) {
@@ -94,7 +98,7 @@ export const eliminarProducto = async (id) => {
 }
 
 export const obtenerProductosHome = async () => {
-  const respuesta = await fetch(`${API_URL}/api/productos/home`)
+  const respuesta = await fetchAPI(`/api/productos/home`)
 
   if (!respuesta.ok) {
     throw new Error("Error al obtener los productos del Home")
@@ -110,9 +114,7 @@ export const obtenerProductosHome = async () => {
 }
 
 export const obtenerProductosAdmin = async () => {
- const respuesta = await fetch(`${API_URL}/api/productos/admin`, {
-    credentials: "include"
-  })
+ const respuesta = await fetchAPI(`/api/productos/admin`)
 
   if (!respuesta.ok) {
     throw new Error("Error al obtener los productos del administrador")
@@ -122,7 +124,7 @@ export const obtenerProductosAdmin = async () => {
 
   if (!datos.ok) {
     throw new Error(
-      datos.mensaje || "Error al obtener los productos del administrador"
+      datos .mensaje || "Error al obtener los productos del administrador"
     )
   }
 
@@ -130,11 +132,10 @@ export const obtenerProductosAdmin = async () => {
 }
 
 export const restaurarProducto = async (id) => {
-  const respuesta = await fetch(
-    `${API_URL}/api/productos/${id}/restaurar`,
+  const respuesta = await fetchAPI(
+    `/api/productos/${id}/restaurar`,
     {
-      method: "PUT",
-      credentials: "include"
+      method: "PUT"
     }
   )
 
@@ -146,6 +147,24 @@ export const restaurarProducto = async (id) => {
 
   if (!datos.ok) {
     throw new Error(datos.mensaje)
+  }
+
+  return datos
+}
+
+export async function cerrarSesionAPI() {
+  const respuesta = await fetchAPI("/api/auth/logout", {
+    method: "POST"
+  })
+
+  if (!respuesta.ok) {
+    throw new Error("Error al cerrar la sesión")
+  }
+
+  const datos = await respuesta.json()
+
+  if (!datos.ok) {
+    throw new Error(datos.mensaje || "No fue posible cerrar la sesión")
   }
 
   return datos

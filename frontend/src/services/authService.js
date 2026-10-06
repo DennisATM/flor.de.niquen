@@ -31,6 +31,27 @@ export const iniciarSesion = async (email, password) => {
   return datos.usuario
 }
 
+export const verificarSesion = async () => {
+  const respuesta = await fetch(
+    `${API_URL}/api/auth/usuario`,
+    {
+      credentials: "include"
+    }
+  )
+
+  if (!respuesta.ok) {
+    return null
+  }
+
+  const datos = await respuesta.json()
+
+  if (!datos.ok) {
+    return null
+  }
+
+  return datos.usuario
+}
+
 export const obtenerUsuarioSesion = () => {
   const usuario = sessionStorage.getItem("adminUsuario")
 

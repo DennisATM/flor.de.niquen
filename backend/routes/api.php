@@ -1,6 +1,6 @@
 <?php
 
-function manejarRuta($metodo, $ruta)
+function manejarRuta($metodo ="", $ruta ="")
 {
     /*
     |--------------------------------------------------------------------------
@@ -35,6 +35,23 @@ function manejarRuta($metodo, $ruta)
         $controller = new AuthController($pdo);
 
         return $controller->login($datos ?? []);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Logout de usuario admin
+    |--------------------------------------------------------------------------
+    */
+    if ($metodo === "POST" && $ruta === "/api/auth/logout") {
+
+        require_once __DIR__ . "/../middleware/Auth.php";
+
+        Auth::cerrarSesion();
+
+        return [
+            "ok" => true,
+            "mensaje" => "Sesión cerrada correctamente"
+        ];
     }
 
     /*
@@ -164,7 +181,7 @@ function manejarRuta($metodo, $ruta)
 
     if ($metodo === "PUT" && preg_match("#^/api/productos/([0-9]+)$#", $ruta, $coincidencias)) {
 
-    require_once __DIR__ . "/../middleware/Auth.php";
+        require_once __DIR__ . "/../middleware/Auth.php";
 
         $autorizacion = Auth::requerirAutenticacion();
 
@@ -195,7 +212,7 @@ function manejarRuta($metodo, $ruta)
   
     if ($metodo === "DELETE" && preg_match("#^/api/productos/([0-9]+)$#", $ruta, $coincidencias)) {
 
-    require_once __DIR__ . "/../middleware/Auth.php";
+        require_once __DIR__ . "/../middleware/Auth.php";
 
         $autorizacion = Auth::requerirAutenticacion();
 
